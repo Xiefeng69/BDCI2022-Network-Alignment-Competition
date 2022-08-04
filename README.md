@@ -1,4 +1,4 @@
-# Network Alignment Competition" 
+# Network Alignment Competition
 
 ## 赛题名称
 
