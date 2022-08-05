@@ -1,4 +1,3 @@
-from email import parser
 import math
 import numpy as np
 import networkx as nx
@@ -43,13 +42,13 @@ for i in range(len(A2)):
             if randN >= 0 and randN < pr:
                 A2[i][j] = 0
                 remove_num += 1
-        else:
-            if randN >= 0 and randN < pa:
-                A2[i][j] = 1
-                add_num += 1
+        # else:
+        #     if randN >= 0 and randN < pa:
+        #         A2[i][j] = 1
+        #         add_num += 1
 
 print(f"remove edge numer: {remove_num}\n")
-print(f"add edge numer: {add_num}\n")
+# print(f"add edge numer: {add_num}\n")
 
 # step 4: save new graph
 nx_graph_p = nx.from_numpy_array(A2)

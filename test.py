@@ -65,4 +65,5 @@ plt.show()
 anchor_num = 1
 np.random.shuffle(ground_truth)
 anchor = ground_truth[0:anchor_num]
+print('anchor:\n')
 print(anchor)
