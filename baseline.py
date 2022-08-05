@@ -67,30 +67,33 @@ class GraphConvLayer(nn.Module):
             return self.act(output)
 
 class Model(nn.Module):
-    def __init__(self, A1, A2, hidden):
+    def __init__(self, A1, A2, embedding_dim):
         super().__init__()
         self.l = 2
-        self.hidden = hidden
-        self.n_node = A1.shape[0]
+        self.embedding_dim = embedding_dim
+        self.num_sr = A1.shape[0]
+        self.num_tg = A2.shape[0]
         self.adj1 = A1
         self.adj2 = A2
-        self.dropout = nn.Dropout(0.2)
-        self.E1 = nn.Parameter(torch.FloatTensor(self.n_node, self.hidden), requires_grad=True)
-        self.E2 = nn.Parameter(torch.FloatTensor(self.n_node, self.hidden), requires_grad=True)
-        self.gcnblocks = nn.ModuleList([GraphConvLayer(in_features=self.hidden, out_features=self.hidden) for i in range(self.l)])
-        self.init_parameters()
+        self.dropout = nn.Dropout(0.5)
+        self.embedding_sr = nn.Parameter(torch.FloatTensor(self.num_sr, self.embedding_dim), requires_grad=True)
+        self.embedding_tg = nn.Parameter(torch.FloatTensor(self.num_tg, self.embedding_dim), requires_grad=True)
+        # self.embedding_sr = nn.Embedding(self.num_sr, self.embedding_dim, _weight=torch.zeros((self.num_sr, self.embedding_dim), dtype=torch.float))
+        # self.embedding_tg = nn.Embedding(self.num_tg, self.embedding_dim, _weight=torch.zeros((self.num_tg, self.embedding_dim), dtype=torch.float))
+        self.gcnblocks = nn.ModuleList([GraphConvLayer(in_features=self.embedding_dim, out_features=self.embedding_dim) for i in range(self.l)])
+    #     self.init_parameters()
     
-    def init_parameters(self):
-        for p in self.parameters():
-            if p.data.ndimension() >= 2:
-                nn.init.xavier_uniform_(p.data)
-            else:
-                stdv = 1. / math.sqrt(p.size(0))
-                p.data.uniform_(-stdv, stdv)
+    # def init_parameters(self):
+    #     nn.init.normal_(self.embedding_sr.weight.data, std=1. / math.sqrt(self.num_sr))
+    #     nn.init.normal_(self.embedding_tg.weight.data, std=1. / math.sqrt(self.num_tg))
+
+    def normalize(self):
+        self.embedding_sr.weight.data = F.normalize(self.embedding_sr.weight, dim=-1, p=2)
+        self.embedding_tg.weight.data = F.normalize(self.embedding_tg.weight, dim=-1, p=2)
     
     def forward(self):
-        a1_embeddings = self.E1
-        a2_embeddings = self.E2
+        a1_embeddings = self.embedding_sr
+        a2_embeddings = self.embedding_tg
         for layer in self.gcnblocks:
             a1_embeddings = layer(a1_embeddings, self.adj1)
             a1_embeddings = self.dropout(a1_embeddings)
@@ -116,14 +119,14 @@ def evaluate(Embedding1, Embedding2, sim_measure="euclidean"):
 ##############
 # building block
 epoch = 30
-hidden = 1000
+embedding_dim = 1000
 batchsize = 16
 learning_rate = 0.0001
 weight_decay = 1e-5
 A1, A2, anchor = load_data()
 dataset = Dataset(anchor)
 train_loader = DataLoader(dataset=dataset, batch_size=batchsize, shuffle=True)
-model = Model(Variable(torch.from_numpy(A1).float()), Variable(torch.from_numpy(A2).float()), hidden=hidden)
+model = Model(Variable(torch.from_numpy(A1).float()), Variable(torch.from_numpy(A2).float()), embedding_dim=embedding_dim)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 criterion = nn.L1Loss()
 ##############
