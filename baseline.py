@@ -104,7 +104,7 @@ class Model(nn.Module):
             a2_embeddings = self.dropout(a2_embeddings)
         return a1_embeddings, a2_embeddings
 
-def compute_loss(criterion, a1_embedding, a2_embedding, a2_neg_embedding, neg_margin=3, neg_param=0.5, only_pos=False):
+def compute_loss(a1_embedding, a2_embedding, a2_neg_embedding, neg_margin=3, neg_param=0.5, only_pos=False):
     # positive pair loss computation
     pos_loss = torch.abs(a1_embedding - a2_embedding)
     pos_loss = torch.sum(pos_loss, dim=1)
@@ -116,10 +116,10 @@ def compute_loss(criterion, a1_embedding, a2_embedding, a2_neg_embedding, neg_ma
     neg_loss = F.relu(neg_margin - neg_loss)
     neg_loss = torch.sum(neg_loss)
     neg_loss = Variable(neg_loss, requires_grad=True)
-    # return pos_loss + neg_param * neg_loss
+    
     return pos_loss + neg_param * neg_loss
 
-def evaluate(Embedding1, Embedding2, sim_measure="cosine"):
+def evaluate(Embedding1, Embedding2, hitmax=10, sim_measure="cosine"):
     Embedding1 = F.normalize(Embedding1, dim=1)
     Embedding2 = F.normalize(Embedding2, dim=1)
     Embedding1 = Embedding1.detach().numpy()
@@ -134,27 +134,29 @@ def evaluate(Embedding1, Embedding2, sim_measure="cosine"):
     for line in similarity_matrix:
         idx = np.argmax(line)
         alignment_hit1.append(idx)
-        idxs = heapq.nlargest(10, range(len(line)), line.take)
+        idxs = heapq.nlargest(hitmax, range(len(line)), line.take)
         alignment_hit5.append(idxs)
     return similarity_matrix, alignment_hit1, alignment_hit5
 
-##############
+############################
 # building block
-epoch = 10
-embedding_dim = 1000
+epoch = 40
+embedding_dim = 256
 batchsize = 16
-learning_rate = 0.01
+learning_rate = 0.001
 weight_decay = 1e-5
 A1, A2, anchor = load_data()
 dataset = Dataset(anchor)
 train_loader = DataLoader(dataset=dataset, batch_size=batchsize, shuffle=True)
 model = Model(Variable(torch.from_numpy(A1).float()), Variable(torch.from_numpy(A2).float()), embedding_dim=embedding_dim)
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-criterion = nn.L1Loss()
-##############
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+############################
 
 for e in range(epoch):
-    for i, data in enumerate(train_loader):
+    # if e % 5 == 0:
+    #     a2_neg_align_out = np.random.randint(low=0, high=1034, size=(batchsize))
+    #     a2_neg_align_out = torch.from_numpy(a2_neg_align_out)
+    for _, data in enumerate(train_loader):
         model.train()
         optimizer.zero_grad()
         a1_align, a2_align, a2_neg_align = data
@@ -162,24 +164,27 @@ for e in range(epoch):
         a1_embedding = E1[a1_align.long()]
         a2_embedding = E2[a2_align.long()]
         a2_neg_embedding = E2[a2_neg_align.long()]
-        loss = compute_loss(criterion, a1_embedding, a2_embedding, a2_neg_embedding)
+        loss = compute_loss(a1_embedding, a2_embedding, a2_neg_embedding, neg_param=0)
         loss.backward()
         optimizer.step()
     print(f"epoch: {e+1}, loss: {loss}\n")
 
-# test
+# test and evaluate 
 model.eval()
 E1, E2 = model()
-similarity_matrix, alignment_hit1, alignment_hit5 = evaluate(Embedding1=E1, Embedding2=E2)
+similarity_matrix, alignment_hit1, alignment_hit5 = evaluate(Embedding1=E1, Embedding2=E2, hitmax=10)
 print(similarity_matrix)
+# print(alignment_hit1)
+# print(alignment_hit5)
 
 ground_truth = np.loadtxt('ground_truth.txt', delimiter=' ')
 hit_1 = 0
 hit_5 = 0
 for idx in range(len(ground_truth)):
     gt = ground_truth[idx][1]
-    if int(gt) == int(alignment_hit1[i]):
+    if int(gt) == alignment_hit1[idx]:
         hit_1 += 1
-    if int(gt) in alignment_hit5[i]:
+    if int(gt) in alignment_hit5[idx]:
         hit_5 += 1
-print(f"final score: hit@1: {hit_1/len(ground_truth)}, hit@5: {hit_5/len(ground_truth)}")
+
+print(f"final score: hit@1: total {hit_1} and ratio {hit_1/len(ground_truth)}, hit@5: total {hit_5} and ratio {hit_5/len(ground_truth)}")
