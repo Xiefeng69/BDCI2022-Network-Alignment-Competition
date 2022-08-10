@@ -3,18 +3,20 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import argparse
-
+# cmd: python preprocess.py --pr 0
 parser = argparse.ArgumentParser()
 parser.add_argument('--input', default='data_G1.txt', type=str, help='the file path of original graph')
 parser.add_argument('--pr', default=0.03, type=float, help="the probability of removing edges")
 parser.add_argument('--pa', default=0.0005, type=float, help='the probability of adding edges')
 parser.add_argument('--r', default=0.4, type=float, help='anchor ratio')
+parser.add_argument('--isshow', default=False, type=bool)
 args = parser.parse_args()
 
 inputs = args.input
 pr = args.pr
 pa = args.pa
 anchor_ratio = args.r
+isshow = args.isshow
 
 # step 1: loading exist graph
 nx_graph = nx.read_edgelist(inputs, nodetype = int, comments="%")
@@ -76,10 +78,11 @@ with open('anchor.txt', 'w', encoding='utf-8') as f:
 
 
 # step 7: visualization
-print('show A1\n', A1)
-nx.draw(nx_graph)
-plt.show()
+if isshow:
+    print('show A1\n', A1)
+    nx.draw(nx_graph)
+    plt.show()
 
-print('show A2\n', A2)
-nx.draw(nx_graph_p)
-plt.show()
+    print('show A2\n', A2)
+    nx.draw(nx_graph_p)
+    plt.show()
