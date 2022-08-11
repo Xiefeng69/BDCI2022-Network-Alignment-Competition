@@ -24,21 +24,15 @@ class Model(nn.Module):
     def init_parameters(self):
         nn.init.normal_(self.embedding1.data, mean=0, std=1./self.embedding_dim)
         nn.init.normal_(self.embedding2.data, mean=0, std=1./self.embedding_dim)
-    
-    @property
-    def embedding1(self):
-        return self.embedding1
-    
-    @property
-    def embedding2(self):
-        return self.embedding2
 
     def forward(self):
         a1_embeddings = self.embedding1
         a2_embeddings = self.embedding2
         for layer in self.gcnblocks:
             a1_embeddings = layer(a1_embeddings, self.adj1)
+            a1_embeddings = self.dropout(a1_embeddings)
             a2_embeddings = layer(a2_embeddings, self.adj2)
+            a2_embeddings = self.dropout(a2_embeddings)
         a1_embeddings = F.normalize(a1_embeddings, dim=-1, p=2)
         a2_embeddings = F.normalize(a2_embeddings, dim=-1, p=2)
         return a1_embeddings, a2_embeddings

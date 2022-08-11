@@ -9,25 +9,6 @@ import heapq
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import euclidean_distances
 
-def evaluate(Embedding1, Embedding2, hitmax=10, sim_measure="cosine"):
-    # Embedding1 = F.normalize(Embedding1, p=2, dim=1)
-    # Embedding2 = F.normalize(Embedding2, p=2, dim=1)
-    Embedding1 = Embedding1.detach().numpy()
-    Embedding2 = Embedding2.detach().numpy()
-    if sim_measure == "cosine":
-        similarity_matrix = cosine_similarity(Embedding1, Embedding2)
-    else:
-        similarity_matrix = euclidean_distances(Embedding1, Embedding2)
-        similarity_matrix = np.exp(-similarity_matrix)
-    alignment_hit1 = list()
-    alignment_hit5 = list()
-    for line in similarity_matrix:
-        idx = np.argmax(line)
-        alignment_hit1.append(idx)
-        idxs = heapq.nlargest(hitmax, range(len(line)), line.take)
-        alignment_hit5.append(idxs)
-    return similarity_matrix, alignment_hit1, alignment_hit5
-
 def generate_neg_sample(train_data, neg_samples_size):
     # broadcast ground truth
     t = len(train_data)
