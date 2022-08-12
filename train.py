@@ -27,10 +27,10 @@ print(f"current device is {device}")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--epoch", type=int, default=100, help="epoch to run")
-parser.add_argument("--seed", type=int, default=5, help="training set ratio")
+parser.add_argument("--seed", type=int, default=3, help="training set ratio")
 parser.add_argument('--hidden', type=int, default=128, help="hidden dimension of entity embeddings")
 parser.add_argument('--lr', type=float, default=0.01, help="learning rate")
-parser.add_argument('--k', type=float, default=20, help="hit@k")
+parser.add_argument('--k', type=float, default=10, help="hit@k")
 parser.add_argument('--negsize', type=int, default=10, help="number of negative samples")
 parser.add_argument('--negiter', type=int, default=10, help="re-calculate epoch of negative samples")
 parser.add_argument('--weight_decay', type=float, default=1e-5, help="weight decay coefficient")
@@ -52,8 +52,8 @@ k = args.k
 
 ############################
 # preprocess
-graph1 = f'{graph_path}1.txt'
-graph2 = f'{graph_path}2.txt'
+graph1 = f'{graph_path}1'
+graph2 = f'{graph_path}2'
 A1, A2, anchor = load_data(graph1=graph1, graph2=graph2)
 train_size = int(train_seeds_ratio * len(anchor[:,0]))
 test_size = len(anchor[:,0]) - train_size
@@ -73,7 +73,7 @@ print(f'#total params: {pytorch_total_params}')
 print(f"training samples: {train_size}, test samples: {test_size}")
 print(f"model architecture:\n {model}")
 
-def evaluate(data, k=10, sim_measure="cosine", phase="test"):
+def evaluate(data, k, sim_measure="cosine", phase="test"):
     model.eval()
     Embedding1, Embedding2 = model()
     Embedding1 = Embedding1.detach()

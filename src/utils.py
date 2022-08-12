@@ -24,13 +24,16 @@ def generate_neg_sample(train_data, neg_samples_size):
     return neg1_left, neg1_right, neg2_left, neg2_right
 
 def load_data(graph1, graph2):
-    # load graph adjacent matrix
-    A1 = nx.read_edgelist(graph1, nodetype = int, comments="%")
-    adj1 = nx.adjacency_matrix(A1, nodelist = range(A1.number_of_nodes()) )
+    # load graph adjacent matrix by networkx
+    A1 = nx.read_edgelist(f"{graph1}.txt", nodetype = int, comments="%")
+    adj1 = nx.adjacency_matrix(A1, nodelist = range(A1.number_of_nodes()))
     A1=np.array(nx.adjacency_matrix(A1).todense())
-    A2 = nx.read_edgelist(graph2, nodetype = int, comments="%")
-    adj2 = nx.adjacency_matrix(A2, nodelist = range(A2.number_of_nodes()) )
+    A2 = nx.read_edgelist(f"{graph2}.txt", nodetype = int, comments="%")
+    adj2 = nx.adjacency_matrix(A2, nodelist = range(A2.number_of_nodes()))
     A2=np.array(nx.adjacency_matrix(A2).todense())
+    # load graph adjacent matrix by numpy.npy
+    A1 = np.load(f"{graph1}.npy")
+    A2 = np.load(f"{graph2}.npy")
     # add self-loop
     I = np.identity(len(A1))
     A1 = A1 + I
