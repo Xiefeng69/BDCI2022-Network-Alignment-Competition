@@ -26,7 +26,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"current device is {device}")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--epoch", type=int, default=1000, help="epoch to run")
+parser.add_argument("--epoch", type=int, default=100, help="epoch to run")
 parser.add_argument("--seed", type=int, default=5, help="training set ratio")
 parser.add_argument('--hidden', type=int, default=128, help="hidden dimension of entity embeddings")
 parser.add_argument('--lr', type=float, default=0.01, help="learning rate")
@@ -64,7 +64,7 @@ batchsize = train_size
 train_dataset = Dataset(train_set)
 train_loader = DataLoader(dataset=train_dataset, batch_size=batchsize, shuffle=False)
 model = Model(Variable(torch.from_numpy(A1).float()), Variable(torch.from_numpy(A2).float()), embedding_dim=embedding_dim)
-optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=learning_rate, weight_decay=weight_decay)
+optimizer = torch.optim.Adagrad(filter(lambda p: p.requires_grad, model.parameters()), lr=learning_rate, weight_decay=weight_decay)
 criterion = nn.TripletMarginLoss(margin=3, p=2)
 ############################
 
@@ -73,11 +73,13 @@ print(f'#total params: {pytorch_total_params}')
 print(f"training samples: {train_size}, test samples: {test_size}")
 print(f"model architecture:\n {model}")
 
-def evaluate(data, k=10, sim_measure="cosine"):
+def evaluate(data, k=10, sim_measure="cosine", phase="test"):
     model.eval()
     Embedding1, Embedding2 = model()
     Embedding1 = Embedding1.detach()
     Embedding2 = Embedding2.detach()
+    if phase == "over":
+        print(Embedding1)
     # step 1: generate sim mat
     if sim_measure == "cosine":
         # similarity_matrix = cosine_similarity(Embedding1, Embedding2)
@@ -132,6 +134,6 @@ for e in range(epoch):
 
 # final evaluation and test
 ground_truth = np.loadtxt('ground_truth.txt', delimiter=' ')
-similarity_matrix, alignment_hit1, alignment_hitk, hit_1_score, hit_k_score = evaluate(data=ground_truth, k=k)
+similarity_matrix, alignment_hit1, alignment_hitk, hit_1_score, hit_k_score = evaluate(data=ground_truth, k=k, phase="over")
 print(similarity_matrix)
 print(f"final score: hit@1: total {hit_1_score} and ratio {round(hit_1_score/len(ground_truth), 2)}, hit@{k}: total {hit_k_score} and ratio {round(hit_k_score/len(ground_truth), 2)}")

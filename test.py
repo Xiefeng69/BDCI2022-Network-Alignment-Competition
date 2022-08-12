@@ -3,7 +3,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 # step 1: load A1
-A1 = np.random.randint(0,2,(5,5))
+A1 = np.random.randint(0,2,(10,10))
+A1 = np.triu(A1)
+A1 += A1.T - np.diag(A1.diagonal())
 
 # step 2: doing permutation to generate a new graph
 I = np.identity(len(A1))
@@ -19,7 +21,7 @@ print('A1\n', A1)
 print('A2\n', A2)
 
 # step 3: doing edge removal to add structural noise
-pr = 0.2
+pr = 0
 pa = 0.05
 remove_num = 0
 add_num = 0
@@ -30,14 +32,19 @@ for i in range(len(A2)):
             if randN >= 0 and randN < pr:
                 A2[i][j] = 0
                 remove_num += 1
-        else:
-            if randN >= 0 and randN < pa:
-                A2[i][j] = 1
-                add_num += 1
+        # else:
+        #     if randN >= 0 and randN < pa:
+        #         A2[i][j] = 1
+        #         add_num += 1
 print(f"remove edge numer: {remove_num}\n")
 print(f"add edge numer: {add_num}\n")
 
+nx_graph_p = nx.from_numpy_array(A2)
+nx_graph_p.edges(data=True)
+nx.write_edgelist(nx_graph_p, 'data_G2_test.txt', delimiter=' ')
+
 # step 4: show the ground truth
+print('ground truth test 1')
 PT = np.transpose(P)
 ground_truth = list()
 for idx1 in range(len(PT)):
@@ -47,6 +54,16 @@ for idx1 in range(len(PT)):
     print(f'{idx1} {idx2}\n')
     ground_truth.append(f'{idx1} {idx2}')
 
+print('ground truth test 2')
+PT = P
+ground_truth = []
+for idx1 in range(len(PT)):
+    list = PT[idx1]
+    loc = np.where(list==1)
+    idx2 = loc[0][0]
+    print(f'{idx2} {idx1}\n')
+    ground_truth.append(f'{idx2} {idx1}')
+
 # step 5: visualization
 nx_graph = nx.from_numpy_array(A1)
 nx_graph.edges(data=True)
@@ -54,10 +71,10 @@ nx_graph_p = nx.from_numpy_array(A2)
 nx_graph_p.edges(data=True)
 
 print('show A1\n', A1)
+print('show A2\n', A2)
+
 nx.draw(nx_graph, with_labels= True)
 plt.show()
-
-print('show A2\n', A2)
 nx.draw(nx_graph_p, with_labels= True)
 plt.show()
 

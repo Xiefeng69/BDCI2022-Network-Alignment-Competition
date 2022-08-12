@@ -52,10 +52,23 @@ for i in range(len(A2)):
 print(f"remove edge numer: {remove_num}\n")
 # print(f"add edge numer: {add_num}\n")
 
-# step 4: save new graph
+# step 4: save orignal graph and new graph
+nx_graph_p = nx.from_numpy_array(A1)
+nx_graph_p.edges(data=True)
+nx.write_edgelist(nx_graph_p, 'data_G1.txt', delimiter=' ')
+
 nx_graph_p = nx.from_numpy_array(A2)
 nx_graph_p.edges(data=True)
 nx.write_edgelist(nx_graph_p, 'data_G2.txt', delimiter=' ')
+
+# custom_G = nx.Graph(name='network2')
+# for index in range(len(A1)):
+#     line = A1[index]
+#     locs = np.where(line==1)
+#     locs = locs[0]
+#     for loc_idx in list(locs):
+#         custom_G.add_weighted_edges_from([(index, loc_idx, 1.)])
+# nx.write_edgelist(custom_G, 'data_G3.txt', delimiter=' ')
 
 # step 5: save ground truth
 PT = np.transpose(P)
@@ -75,7 +88,6 @@ anchor = ground_truth[0:anchor_num]
 with open('anchor.txt', 'w', encoding='utf-8') as f:
     for i in anchor:
         f.write(f"{i}\n")
-
 
 # step 7: visualization
 if isshow:
