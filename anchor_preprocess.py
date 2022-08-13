@@ -1,7 +1,7 @@
 import numpy as np
 np.set_printoptions(suppress=True)
 
-anchor = np.loadtxt('anchor.txt', delimiter=' ')
+anchor = np.loadtxt('data/anchor/anchor.txt', delimiter=' ')
 anchor_num = len(anchor)
 
 # add anchor noise
