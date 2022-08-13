@@ -53,12 +53,12 @@ print(f"remove edge numer: {remove_num}\n")
 # print(f"add edge numer: {add_num}\n")
 
 # step 4: save orignal graph and new graph
-np.save("data_G1.npy", A1)  #保存数组
+np.save("data/graph/data_G1.npy", A1)  #保存数组
 nx_graph = nx.from_numpy_array(A1)
 nx_graph.edges(data=True)
 nx.write_edgelist(nx_graph, 'data_G1.txt', delimiter=' ')
 
-np.save("data_G2.npy", A2) 
+np.save("data/graph/data_G2.npy", A2) 
 nx_graph_p = nx.from_numpy_array(A2)
 nx_graph_p.edges(data=True)
 nx.write_edgelist(nx_graph_p, 'data_G2.txt', delimiter=' ')
@@ -87,7 +87,7 @@ with open('ground_truth.txt', 'w', encoding='utf-8') as f:
 anchor_num = math.ceil(len(ground_truth)*anchor_ratio)
 np.random.shuffle(ground_truth)
 anchor = ground_truth[0:anchor_num]
-with open('anchor.txt', 'w', encoding='utf-8') as f:
+with open('data/anchor/anchor.txt', 'w', encoding='utf-8') as f:
     for i in anchor:
         f.write(f"{i}\n")
 

@@ -35,6 +35,7 @@ parser.add_argument('--negsize', type=int, default=10, help="number of negative 
 parser.add_argument('--negiter', type=int, default=10, help="re-calculate epoch of negative samples")
 parser.add_argument('--weight_decay', type=float, default=1e-5, help="weight decay coefficient")
 parser.add_argument('--graph', type=str, default="data_G", help="graph path")
+parser.add_argument('--anoise', type=float, default=0.2, help="anchor noise")
 args = parser.parse_args()
 
 ############################
@@ -48,13 +49,14 @@ negiter = args.negiter
 graph_path = args.graph
 train_seeds_ratio = args.seed * 0.1
 k = args.k
+anoise = args.anoise
 ############################
 
 ############################
 # preprocess
 graph1 = f'{graph_path}1'
 graph2 = f'{graph_path}2'
-A1, A2, anchor = load_data(graph1=graph1, graph2=graph2)
+A1, A2, anchor = load_data(graph1=graph1, graph2=graph2, anoise=anoise)
 train_size = int(train_seeds_ratio * len(anchor[:,0]))
 test_size = len(anchor[:,0]) - train_size
 train_set, test_set = torch.utils.data.random_split(anchor, lengths=[train_size, test_size])

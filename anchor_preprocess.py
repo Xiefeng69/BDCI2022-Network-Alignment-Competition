@@ -15,7 +15,7 @@ anchor_1_right = np.expand_dims(anchor_1_right, axis=1)
 anchor_1 = np.hstack((anchor_1_left, anchor_1_right))
 print(f'anchor_1 number: {anchor_1_num}\n')
 anchor_1withgt = np.concatenate((anchor_1, anchor[anchor_1_num:])) # concat with ground truth
-with open(f'anchor_{anchor_1_ratio}.txt', 'w', encoding='utf-8') as f:
+with open(f'data/anchor/anchor_{anchor_1_ratio}.txt', 'w', encoding='utf-8') as f:
     for i in anchor_1withgt:
         f.write(f"{int(i[0])} {int(i[1])}\n")
 
@@ -30,7 +30,7 @@ anchor_2 = np.hstack((anchor_2_left, anchor_2_right))
 anchor_2 = np.concatenate((anchor_1, anchor_2))
 print(f'anchor_2 number: {anchor_2_num}\n')
 anchor_2withgt = np.concatenate((anchor_2, anchor[anchor_2_num:])) # concat with ground truth
-with open(f'anchor_{anchor_2_ratio}.txt', 'w', encoding='utf-8') as f:
+with open(f'data/anchor/anchor_{anchor_2_ratio}.txt', 'w', encoding='utf-8') as f:
     for i in anchor_2withgt:
         f.write(f"{int(i[0])} {int(i[1])}\n")
 
@@ -45,6 +45,6 @@ anchor_3 = np.hstack((anchor_3_left, anchor_3_right))
 anchor_3 = np.concatenate((anchor_2, anchor_3))
 print(f'anchor_3 number: {anchor_3_num}\n')
 anchor_3withgt = np.concatenate((anchor_3, anchor[anchor_3_num:])) # concat with ground truth
-with open(f'anchor_{anchor_3_ratio}.txt', 'w', encoding='utf-8') as f:
+with open(f'data/anchor/anchor_{anchor_3_ratio}.txt', 'w', encoding='utf-8') as f:
     for i in anchor_3withgt:
         f.write(f"{int(i[0])} {int(i[1])}\n")

@@ -23,7 +23,7 @@ def generate_neg_sample(train_data, neg_samples_size):
 
     return neg1_left, neg1_right, neg2_left, neg2_right
 
-def load_data(graph1, graph2):
+def load_data(graph1, graph2, anoise):
     # load graph adjacent matrix by networkx
     A1 = nx.read_edgelist(f"{graph1}.txt", nodetype = int, comments="%")
     adj1 = nx.adjacency_matrix(A1, nodelist = range(A1.number_of_nodes()))
@@ -32,13 +32,13 @@ def load_data(graph1, graph2):
     adj2 = nx.adjacency_matrix(A2, nodelist = range(A2.number_of_nodes()))
     A2=np.array(nx.adjacency_matrix(A2).todense())
     # load graph adjacent matrix by numpy.npy
-    A1 = np.load(f"{graph1}.npy")
-    A2 = np.load(f"{graph2}.npy")
+    A1 = np.load(f"data/graph/{graph1}.npy")
+    A2 = np.load(f"data/graph/{graph2}.npy")
     # add self-loop
     I = np.identity(len(A1))
     A1 = A1 + I
     A2 = A2 + I
     # load anchor point
-    anchor = np.loadtxt('anchor.txt', delimiter=' ')
+    anchor = np.loadtxt(f'data/anchor/anchor_{anoise}.txt', delimiter=' ')
 
     return A1, A2, anchor
