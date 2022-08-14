@@ -34,4 +34,4 @@ python train.py
 + Make It Easy-An Effective End-to-End Entity Alignment Framework (SIGIR21)
 + Graph Alignment with Noisy Supervision (WWW22)
 + Multilingual Knowledge Graph Completion with Self-Supervised Adaptive Graph Alignment (ACL22)
-+ A comprehensive survey of entity alignment for knowledge graphs
++ A comprehensive survey of entity alignment for knowledge graphs (AI Open 2021)
