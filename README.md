@@ -1,4 +1,9 @@
+[visitors-img]: https://visitor-badge.glitch.me/badge?page_id=Xiefeng69.Network-Alignment-Competition
+[repo-url]: https://github.com/Xiefeng69/Network-Alignment-Competition
+
 # Network Alignment Competition
+
+[![visitors][visitors-img]][repo-url]
 
 ## 赛题名称
 噪音网络中的对齐算法
