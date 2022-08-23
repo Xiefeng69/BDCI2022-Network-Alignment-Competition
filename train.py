@@ -34,7 +34,8 @@ parser.add_argument('--k', type=float, default=10, help="hit@k")
 parser.add_argument('--negsize', type=int, default=10, help="number of negative samples")
 parser.add_argument('--negiter', type=int, default=10, help="re-calculate epoch of negative samples")
 parser.add_argument('--weight_decay', type=float, default=1e-5, help="weight decay coefficient")
-parser.add_argument('--graph', type=str, default="data_G", help="graph path")
+parser.add_argument('--graph_s', type=str, default="data_G1", help="source graph path")
+parser.add_argument('--graph_d', type=str, default="data_G2", help="destination graph path")
 parser.add_argument('--anoise', type=float, default=0.2, help="anchor noise")
 args = parser.parse_args()
 
@@ -46,7 +47,8 @@ learning_rate = args.lr
 weight_decay = args.weight_decay
 neg_samples_size = args.negsize
 negiter = args.negiter
-graph_path = args.graph
+graph_path_s = args.graph_s
+graph_path_d = args.graph_d
 train_seeds_ratio = args.seed * 0.1
 k = args.k
 anoise = args.anoise
@@ -54,8 +56,8 @@ anoise = args.anoise
 
 ############################
 # preprocess
-graph1 = f'{graph_path}1'
-graph2 = f'{graph_path}2'
+graph1 = graph_path_s
+graph2 = graph_path_d
 A1, A2, anchor = load_data(graph1=graph1, graph2=graph2, anoise=anoise)
 train_size = int(train_seeds_ratio * len(anchor[:,0]))
 test_size = len(anchor[:,0]) - train_size
