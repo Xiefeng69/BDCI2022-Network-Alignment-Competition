@@ -1,12 +1,12 @@
 [visitors-img]: https://visitor-badge.glitch.me/badge?page_id=Xiefeng69.Network-Alignment-Competition
 [repo-url]: https://github.com/Xiefeng69/Network-Alignment-Competition
 
-# 2022 CCF大数据与计算智能大赛——带噪音的社交网络对齐
+# 带噪音的社交网络对齐
 
 [![visitors][visitors-img]][repo-url]
 
 ## 赛题名称
-带噪音的社交网络对齐，[CCF BDCI2022官网链接](https://wap.datafountain.cn/competitions/598)
+2022 CCF大数据与计算智能大赛——带噪音的社交网络对齐，[CCF BDCI2022官网链接](https://wap.datafountain.cn/competitions/598)
 
 关键词：`网络对齐` `智能算法`
 
